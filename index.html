@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="유기 및 구조동물 정보 조회 및 입양 지원 포털 서비스 - RescuePets">
+  <title>구조동물 조회 서비스 | RescuePets</title>
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand-logo" id="logoBtn">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58 1.47 3.82-.17 6.06.67 1.34.95 2.83.75 4.34-.35 2.65-2.58 4.75-5.25 5.25-1.5.28-3.05-.02-4.35-.75-2.24 1.64-5.48 1.57-6.06.17-.58-1.39.26-4.64 2.26-6.42-.17-.65-.26-1.33-.26-2 0-2.2 1.8-4 4-4z"/>
+            <circle cx="9" cy="10" r="1"/>
+            <circle cx="15" cy="10" r="1"/>
+          </svg>
+        </div>
+        <span>RescuePets</span>
+        <span class="brand-badge" id="apiStatusBadge">🟢 공공 API 연동중</span>
+      </a>
+
+      <!-- Navigation Tabs -->
+      <div class="nav-tabs">
+        <button class="nav-tab-btn active" data-tab="all" id="tabAll">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          전체 동기 목록
+        </button>
+        <button class="nav-tab-btn" data-tab="favorites" id="tabFav">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          관심 동물
+          <span class="tab-badge" id="favCountBadge">0</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="dashboard" id="tabDash">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          현황 대시보드
+        </button>
+        <button class="nav-tab-btn" data-tab="quiz" id="btnOpenQuizTab">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          입양 준비도 테스트
+        </button>
+      </div>
+
+      <!-- Controls (Data Source & Theme Toggle) -->
+      <div class="nav-controls">
+        <button class="btn-data-source" id="btnToggleApiMode" title="데이터 출처 전환 (공공 API / 모의 데이터)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+          <span id="dataSourceLabel">공공 API 모드</span>
+        </button>
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="다크/라이트 모드 전환">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="container hero-wrapper">
+      <div class="hero-content">
+        <h1>사지 말고 입양하세요,<br><span class="hero-highlight">새로운 가족</span>이 기다리고 있습니다</h1>
+        <p>국가동물보호정보시스템 공공 API 연동으로 실시간 구조동물 공고 정보와 입양 절차를 안심하고 조회해보세요.</p>
+      </div>
+
+      <!-- Quick Summary Card -->
+      <div class="hero-stat-card">
+        <div class="stat-item-row">
+          <span class="stat-label">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            현재 보호/공고 중
+          </span>
+          <span class="stat-value highlight-amber" id="heroProtectingCount">0</span>
+        </div>
+        <div class="stat-item-row">
+          <span class="stat-label">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            성공적 입양 완료
+          </span>
+          <span class="stat-value highlight-emerald" id="heroAdoptedCount">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Dashboard Section (Tab: dashboard) -->
+    <section class="dashboard-view" id="dashboardSection" style="display: none;">
+      <div class="dashboard-header">
+        <h2>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          구조동물 현황 요약 대시보드
+        </h2>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">총 등록 동물 수</div>
+          <div class="dash-card-num" id="dashTotalNum">0</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">전체 입소 데이터 기준</div>
+        </div>
+
+        <div class="dash-card">
+          <div class="dash-card-title">보호기간 임박 (D-3 이내)</div>
+          <div class="dash-card-num" style="color: var(--accent-red);" id="dashUrgentNum">0</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">시급한 관심이 필요합니다</div>
+        </div>
+
+        <div class="dash-card">
+          <div class="dash-card-title">입양 성공률</div>
+          <div class="dash-card-num" style="color: var(--accent-emerald);" id="dashRateNum">0%</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">가족을 찾은 귀여운 친구들</div>
+        </div>
+
+        <div class="dash-card" style="grid-column: span 2;">
+          <div class="dash-card-title">축종별 분포 비율</div>
+          <div class="species-bar-container" id="dashSpeciesBar">
+            <div class="bar-segment dog" style="width: 0%;"></div>
+            <div class="bar-segment cat" style="width: 0%;"></div>
+            <div class="bar-segment other" style="width: 0%;"></div>
+          </div>
+          <div class="bar-legend">
+            <div class="legend-item"><div class="legend-dot dog"></div> 개 (<span id="dashDogPct">0</span>%)</div>
+            <div class="legend-item"><div class="legend-dot cat"></div> 고양이 (<span id="dashCatPct">0</span>%)</div>
+            <div class="legend-item"><div class="legend-dot other"></div> 기타 소동물 (<span id="dashOtherPct">0</span>%)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter & Search Controls -->
+    <section class="filter-section" id="filterSection">
+      <div class="filter-grid">
+        <!-- Search Query Input -->
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="form-control" id="searchInput" placeholder="품종, 발견장소, 특이사항 검색 (예: 믹스, 김천)...">
+        </div>
+
+        <!-- Species Dropdown -->
+        <select class="form-control" id="speciesFilter">
+          <option value="all">축종 전체 (개, 고양이, 기타)</option>
+          <option value="dog">🐶 개 (Dog)</option>
+          <option value="cat">🐱 고양이 (Cat)</option>
+          <option value="other">🐰 기타 소동물 (Other)</option>
+        </select>
+
+        <!-- Notice State Dropdown -->
+        <select class="form-control" id="stateFilter">
+          <option value="all">상태 전체 (보호중/입양완료)</option>
+          <option value="protecting">🟢 보호/공고 중</option>
+          <option value="adopted">⚪ 입양 완료</option>
+        </select>
+
+        <!-- Sorting Dropdown -->
+        <select class="form-control" id="sortFilter">
+          <option value="recent">최신 발견일 순</option>
+          <option value="urgent">보호기간 임박 순 (D-day)</option>
+          <option value="oldest">오래된 공고 순</option>
+        </select>
+
+        <!-- Reset Button -->
+        <button class="btn-reset" id="btnResetFilter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          초기화
+        </button>
+      </div>
+
+      <!-- Selected Filter Pills -->
+      <div class="filter-tags-row" id="filterTagsRow" style="display: none;">
+        <span>적용된 필터:</span>
+        <div id="activePillsContainer" style="display: inline-flex; gap: 8px; flex-wrap: wrap;"></div>
+      </div>
+    </section>
+
+    <!-- Cards Section Header -->
+    <div class="cards-header">
+      <div class="cards-count">
+        총 <span id="displayedCount">0</span>마리의 구조동물이 검색되었습니다
+      </div>
+      <button class="btn-secondary" id="btnRefreshApi" style="padding: 6px 12px; font-size: 0.82rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        실시간 API 새로고침
+      </button>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" style="display: none; text-align: center; padding: 40px; color: var(--primary); font-weight: 600;">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite; margin-bottom: 12px;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+      <div>농림축산식품부 공공데이터 API 실시간 데이터를 요청 중입니다...</div>
+    </div>
+
+    <!-- Animal Cards Grid Container -->
+    <section class="pet-grid" id="petGrid">
+      <!-- Dynamic rendering via app.js -->
+    </section>
+
+    <!-- Empty State Fallback -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <div class="empty-icon">🐾</div>
+      <h3>검색 조건에 맞는 동물이 없습니다</h3>
+      <p>다른 검색어나 필터 조건으로 조회를 시도해보세요.</p>
+    </div>
+
+  </main>
+
+  <!-- Animal Detail Modal Overlay -->
+  <div class="modal-overlay" id="animalModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="modalCloseBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <img src="" alt="동물 대표 이미지" class="modal-header-img" id="modalImg">
+      
+      <div class="modal-body-content">
+        <div class="modal-title-row">
+          <div>
+            <div class="notice-no" id="modalNoticeNo">공고번호</div>
+            <h2 class="pet-title" style="font-size: 1.6rem;" id="modalTitle">품종 정보</h2>
+          </div>
+          <button class="btn-fav" id="modalFavBtn" style="position: static; width: 44px; height: 44px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+        <div class="modal-info-grid">
+          <div class="info-box">
+            <span class="info-box-title">성별 및 중성화</span>
+            <span class="info-box-value" id="modalGender"></span>
+          </div>
+          <div class="info-box">
+            <span class="info-box-title">나이 / 체중</span>
+            <span class="info-box-value" id="modalAgeWeight"></span>
+          </div>
+          <div class="info-box">
+            <span class="info-box-title">발견 일자</span>
+            <span class="info-box-value" id="modalHappenDate"></span>
+          </div>
+          <div class="info-box">
+            <span class="info-box-title">보호기간 마감일</span>
+            <span class="info-box-value" id="modalNoticeEndDate"></span>
+          </div>
+        </div>
+
+        <div class="modal-section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          발견 장소 및 보호소 정보
+        </div>
+        <p class="modal-description">
+          <strong>발견 장소:</strong> <span id="modalHappenPlace"></span><br>
+          <strong>보호소명:</strong> <span id="modalShelterName"></span> (<span id="modalShelterTel"></span>)
+        </p>
+
+        <div class="modal-section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          건강 상태 및 특이사항
+        </div>
+        <p class="modal-description" id="modalCharacteristics"></p>
+
+        <div class="modal-actions">
+          <a href="#" class="btn-primary" id="btnCallShelter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            보호소로 문의하기
+          </a>
+          <button class="btn-secondary" id="btnShareModal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            공고 링크 공유
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adoption Readiness Quiz Modal -->
+  <div class="modal-overlay" id="quizModal">
+    <div class="modal-card" style="max-width: 600px;">
+      <button class="modal-close-btn" id="quizCloseBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <h2>반려동물 입양 준비도 테스트</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">새 가족을 맞이하기 전 5가지 체크리스트를 확인해보세요.</p>
+        </div>
+
+        <div class="quiz-progress">
+          <div class="quiz-progress-bar" id="quizProgressBar"></div>
+        </div>
+
+        <!-- Quiz Question Box -->
+        <div id="quizQuestionBox">
+          <div class="quiz-q-box">
+            <div class="quiz-q-num" id="quizQNum">질문 1 / 5</div>
+            <div class="quiz-q-text" id="quizQText">질문 내용이 여기에 들어갑니다.</div>
+          </div>
+          <div class="quiz-options" id="quizOptions">
+            <!-- Dynamic option buttons -->
+          </div>
+        </div>
+
+        <!-- Quiz Result Screen -->
+        <div class="quiz-result" id="quizResult">
+          <div class="score-badge" id="quizScoreText">100점</div>
+          <h3 style="font-size: 1.4rem; margin-bottom: 12px;" id="quizResultTitle">완벽한 준비가 되었습니다!</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;" id="quizResultDesc">
+            책임감 있는 마음가짐과 안정적인 환경이 마련되어 있습니다. 사랑스러운 아이들에게 세상을 선물해주세요.
+          </p>
+          <button class="btn-primary" style="margin: 0 auto;" id="btnRestartQuiz">다시 테스트하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 RescuePets - 구조동물 정보 지원 포털 | 농림축산식품부 공공데이터포털 API 연동</p>
+      <p style="font-size: 0.8rem; margin-top: 6px; color: var(--text-dim);">국가동물보호정보시스템 공공 API (abandonmentPublicService_v2) 표준 데이터 호환</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="mockData.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
